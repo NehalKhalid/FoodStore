@@ -2,6 +2,7 @@
 using Store.Data.Contexts;
 using Store.Data.Entities;
 using Store.Repository.Interfaces;
+using Store.Repository.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,19 @@ namespace Store.Repository.Repositories
         public async Task<TEntity> GetByIdAsync(TKey? id)
             => await _context.Set<TEntity>().FindAsync(id);
 
+        public async Task<IReadOnlyList<TEntity>> GetWithSpecificationAllAsync(ISpecification<TEntity> specs)
+            => await  ApplySpecification(specs).ToListAsync();
+
+        public async Task<TEntity> GetWithSpecificationByIdAsync(ISpecification<TEntity> specs)
+         => await ApplySpecification(specs).FirstOrDefaultAsync();
+
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specs)
+            => SpecificationEvalutor<TEntity, TKey>.GetQuery(_context.Set<TEntity>(), specs);
+
         public void Update(TEntity entity)
             => _context.Set<TEntity>().Update(entity);
+
+        public async Task<int> GetCountSpecificationAsync(ISpecification<TEntity> specs)
+            => await ApplySpecification(specs).CountAsync();
     }
 }
