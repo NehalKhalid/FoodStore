@@ -7,9 +7,7 @@ using Store.Web.Helper;
 
 namespace Store.Web.Controllers
 {
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
 
@@ -18,7 +16,7 @@ namespace Store.Web.Controllers
             _productService = productService;
         }
         [HttpGet]
-        [Cache(10)]
+        [Cache(120)]
         public async Task<ActionResult<IReadOnlyList<ProductDetailsDto>>> GetAllProducts([FromQuery]ProductSpecification input) 
             => Ok(await _productService.GetAllProductsAsync(input));
         [HttpGet]
